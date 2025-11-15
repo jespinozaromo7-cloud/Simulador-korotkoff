@@ -1,0 +1,5 @@
+{
+  "name": "Juego Educativo de Presión Arterial",
+  "description": "Un simulador virtual para practicar la identificación de los sonidos de Korotkoff y determinar la presión arterial sistólica y diastólica.",
+  "requestFramePermissions": []
+}

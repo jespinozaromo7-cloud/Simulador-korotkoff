@@ -1,0 +1,81 @@
+
+<main class="container mx-auto p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center min-h-screen font-sans">
+  <div class="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+    <header class="text-center">
+      <h1 class="text-3xl sm:text-4xl font-bold text-sky-600 dark:text-sky-400">Simulador de Presión Arterial</h1>
+      <p class="text-slate-600 dark:text-slate-400 mt-2">Escucha los sonidos de Korotkoff y mide la presión.</p>
+    </header>
+
+    @if (gameState() === 'idle') {
+      <div class="text-center space-y-4 p-4 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg">
+        <h2 class="text-xl font-semibold">Instrucciones</h2>
+        <ol class="text-left list-decimal list-inside space-y-2 text-slate-700 dark:text-slate-300">
+          <li>Presiona <strong>"Iniciar Simulación"</strong>.</li>
+          <li>El manómetro se inflará y luego comenzará a descender.</li>
+          <li>Presiona <strong>"Marcar Sistólica"</strong> al escuchar el <strong>primer</strong> sonido.</li>
+          <li>Presiona <strong>"Marcar Diastólica"</strong> cuando los sonidos <strong>desaparezcan</strong>.</li>
+        </ol>
+        <button (click)="startGame()" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <i class="fa-solid fa-play mr-2"></i>Iniciar Simulación
+        </button>
+      </div>
+    }
+
+    @if (gameState() === 'inflating' || gameState() === 'deflating') {
+      <div class="flex flex-col items-center space-y-6">
+        <app-manometer [pressure]="currentPressure()"></app-manometer>
+        
+        <div class="w-full p-4 bg-slate-100 dark:bg-slate-700 rounded-lg text-center">
+            @if(gameState() === 'inflating') {
+                <p class="text-lg font-medium text-yellow-600 dark:text-yellow-400 animate-pulse">
+                    <i class="fa-solid fa-arrow-up mr-2"></i>Inflando manguito...
+                </p>
+            } @else {
+                <p class="text-lg font-medium text-green-600 dark:text-green-400">
+                    <i class="fa-solid fa-arrow-down mr-2"></i>Liberando presión... Escucha atentamente.
+                </p>
+            }
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+          <button (click)="markSystolic()" [disabled]="playerSystolic() !== null" 
+                  class="bg-rose-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed enabled:hover:bg-rose-600">
+            <i class="fa-solid fa-volume-high mr-2"></i>Marcar Sistólica
+            @if(playerSystolic(); as sys) {
+              <span class="block text-sm font-normal">({{ sys }} mmHg)</span>
+            }
+          </button>
+          <button (click)="markDiastolic()" [disabled]="playerDiastolic() !== null" 
+                  class="bg-indigo-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed enabled:hover:bg-indigo-600">
+            <i class="fa-solid fa-volume-off mr-2"></i>Marcar Diastólica
+            @if(playerDiastolic(); as dia) {
+              <span class="block text-sm font-normal">({{ dia }} mmHg)</span>
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (gameState() === 'finished') {
+      <div class="text-center space-y-4 p-6 bg-slate-100 dark:bg-slate-700 rounded-lg">
+        <h2 class="text-2xl font-bold">{{ feedbackMessage() }}</h2>
+        <p class="text-slate-600 dark:text-slate-300">{{ feedbackDetails() }}</p>
+        
+        <div class="grid grid-cols-2 gap-4 text-center py-4">
+          <div>
+            <h3 class="font-semibold text-slate-500 dark:text-slate-400">Tus Valores</h3>
+            <p class="text-2xl font-bold">{{ playerSystolic() ?? '--' }} / {{ playerDiastolic() ?? '--' }} <span class="text-base font-normal">mmHg</span></p>
+          </div>
+          <div>
+            <h3 class="font-semibold text-slate-500 dark:text-slate-400">Valores Reales</h3>
+            <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ simulatedSystolic() }} / {{ simulatedDiastolic() }} <span class="text-base font-normal">mmHg</span></p>
+          </div>
+        </div>
+
+        <button (click)="startGame()" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <i class="fa-solid fa-rotate-right mr-2"></i>Jugar de Nuevo
+        </button>
+      </div>
+    }
+  </div>
+</main>

@@ -1,0 +1,54 @@
+
+<div class="relative w-64 h-64 sm:w-72 sm:h-72">
+  <svg viewBox="0 0 200 200" class="w-full h-full">
+    <!-- Gauge Background -->
+    <circle cx="100" cy="100" r="98" fill="white" stroke="#E2E8F0" stroke-width="4" class="dark:fill-slate-800 dark:stroke-slate-600" />
+    <circle cx="100" cy="100" r="90" fill="#F8FAFC" stroke="#CBD5E1" class="dark:fill-slate-700 dark:stroke-slate-500" />
+
+    <!-- Ticks and Labels -->
+    <g class="ticks">
+      @for(tick of gaugeTicks(); track tick.pressure) {
+        <g [attr.transform]="tick.transform">
+          <!-- Tick Line -->
+          <line 
+            x1="100" 
+            y1="10" 
+            x2="100" 
+            [attr.y2]="tick.isLabel ? 25 : 18" 
+            [attr.stroke-width]="tick.isLabel ? 2 : 1"
+            class="stroke-slate-500 dark:stroke-slate-400"
+          />
+          <!-- Label Text -->
+          @if(tick.isLabel) {
+            <text 
+              x="100" 
+              y="36" 
+              text-anchor="middle" 
+              dominant-baseline="middle" 
+              font-size="10"
+              class="fill-slate-700 dark:fill-slate-300 font-semibold"
+              [attr.transform]="'rotate(' + (-tick.transform.split('(')[1].split(' ')[0]) + ' 100 36)'"
+            >
+              {{ tick.pressure }}
+            </text>
+          }
+        </g>
+      }
+    </g>
+
+    <!-- Center Pin -->
+    <circle cx="100" cy="100" r="5" class="fill-slate-700 dark:fill-slate-300" />
+
+    <!-- Needle -->
+    <g [attr.transform]="needleRotation()">
+      <polygon points="100,15 102,100 98,100" class="fill-red-600" />
+    </g>
+
+    <!-- Digital Readout -->
+    <rect x="70" y="130" width="60" height="25" rx="5" class="fill-slate-900 dark:fill-black" />
+    <text x="100" y="143" text-anchor="middle" dominant-baseline="middle" font-size="14" font-family="monospace" class="fill-green-400 font-bold">
+      {{ pressure() | number:'1.0-0' }}
+    </text>
+    <text x="100" y="165" text-anchor="middle" dominant-baseline="middle" font-size="8" class="fill-slate-500 dark:fill-slate-400">mmHg</text>
+  </svg>
+</div>
